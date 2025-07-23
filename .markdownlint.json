@@ -1,0 +1,12 @@
+{
+  "default": true,
+  "MD013": false, // Disable line length rule for flexibility
+  "MD033": false, // Allow inline HTML
+  "MD041": true,  // Require first line to be a heading
+  "MD022": true,  // Headings should be surrounded by blank lines
+  "MD031": true,  // Fenced code blocks should be surrounded by blank lines
+  "MD040": true,  // Fenced code blocks should have a language specified
+  "MD025": true,  // Multiple top-level headings in the same document
+  "MD007": { "indent": 2 }, // Unordered list indentation: 2 spaces
+  "MD029": { "style": "ordered" } // Ordered list item prefix
+}
