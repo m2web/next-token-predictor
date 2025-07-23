@@ -24,6 +24,11 @@ That said, I’m thrilled that technology has advanced to this point! 😊 LLMs 
 ### Prerequisites
 
 - Python 3.8+
+- To use the Streamlit web app, you will also need to install Streamlit:
+
+   ```sh
+   pip install streamlit
+   ```
 
 ### Installation
 
@@ -49,10 +54,16 @@ That said, I’m thrilled that technology has advanced to this point! 😊 LLMs 
 
 ### Usage
 
-Run the predictor:
+#### Run the desktop predictor
 
 ```sh
 python next_token_predictor.py
+```
+
+#### Run the Streamlit web app
+
+```sh
+streamlit run next_token_predictor_streamlit.py
 ```
 
 Follow the on-screen instructions to input your text and see the predicted next token. The app will display the top predicted next tokens and their probabilities, as provided by the OpenAI model.
@@ -61,6 +72,7 @@ Follow the on-screen instructions to input your text and see the predicted next 
 
 ```text
 ├── next_token_predictor.py                # Main application (OpenAI GPT-based predictor)
+├── next_token_predictor_streamlit.py      # Streamlit web app version
 ├── chat-bubble.py                         # UI/utility module
 ├── .gitignore                             # Git ignore file
 ├── .markdownlint.json                     # Markdown lint configuration
