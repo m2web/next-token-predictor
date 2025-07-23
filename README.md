@@ -15,6 +15,12 @@ A simple, interactive Python tool for predicting the next token in a text sequen
 
 ## Getting Started
 
+### Note on Language Model Predictions
+
+Unlike querying a database for specific records, using Large Language Models (LLMs) is fundamentally probabilistic. The model predicts the next token based on probability distributions learned from vast amounts of data—not with certainty or factual lookup. This means the results are the most likely continuations, not guaranteed facts.
+
+That said, I’m thrilled that technology has advanced to this point! 😊 LLMs will continue to open up new possibilities for creativity and innovation—not only in software development, but also in project management, data modeling, marketing, medicine, and more. The potential applications are vast, even though the results remain probabilistic and are based on learned patterns rather than direct data retrieval.
+
 ### Prerequisites
 
 - Python 3.8+
@@ -74,6 +80,7 @@ This project is licensed under the MIT License. See [LICENSE](LICENSE) for detai
 ## Acknowledgements
 
 - Inspired by classic NLP and AI research
+- Also inspired by Scott Hanselman's demonstration of his next-token prediction app ([see him on GitHub](https://github.com/shanselman))
 - UI design by [m2web](https://github.com/m2web)
 
 ---
