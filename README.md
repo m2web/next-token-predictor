@@ -73,7 +73,6 @@ Follow the on-screen instructions to input your text and see the predicted next 
 ```text
 ├── next_token_predictor.py                # Main application (OpenAI GPT-based predictor)
 ├── next_token_predictor_streamlit.py      # Streamlit web app version
-├── chat-bubble.py                         # UI/utility module
 ├── .gitignore                             # Git ignore file
 ├── .markdownlint.json                     # Markdown lint configuration
 ├── assets/
