@@ -49,16 +49,15 @@ Run the predictor:
 python next_token_predictor.py
 ```
 
-Follow the on-screen instructions to input your text and see the predicted next token.
 Follow the on-screen instructions to input your text and see the predicted next token. The app will display the top predicted next tokens and their probabilities, as provided by the OpenAI model.
 
 ## Project Structure
 
 ```text
 ├── next_token_predictor.py                # Main application (OpenAI GPT-based predictor)
-├── next_token_predictor_corrected.py      # Improved/corrected version (also OpenAI GPT-based)
-├── next-token-predictor-old.py            # Legacy version (OpenAI GPT-based, CLI)
 ├── chat-bubble.py                         # UI/utility module
+├── .gitignore                             # Git ignore file
+├── .markdownlint.json                     # Markdown lint configuration
 ├── assets/
 │   ├── final_next_token_predictor_ui.png  # UI screenshot
 │   └── token-predictor.drawio.pdf         # Architecture diagram

@@ -63,7 +63,7 @@ class TokenPredictorApp:
     def on_prompt_keyrelease(self, event):
         if self.debounce_id is not None:
             self.root.after_cancel(self.debounce_id)
-        self.debounce_id = self.root.after(800, self.update_predictions)
+        self.debounce_id = self.root.after(850, self.update_predictions)
 
     def update_predictions(self):
         prompt = self.prompt_entry.get().strip()
@@ -92,7 +92,18 @@ class TokenPredictorApp:
             sorted_tokens = sorted(top_tokens.items(), key=lambda x: -x[1])[:10]
             for i, (token, logprob) in enumerate(sorted_tokens):
                 prob = round(100 * (10 ** logprob), 2)
-                self.prediction_labels[i].config(text=f"{token.strip()}  ({prob}%)", fg="blue")
+                # Make whitespace tokens visible
+                display_token = token
+                if token == " ":
+                    display_token = "[space]"
+                elif token == "\t":
+                    display_token = "[tab]"
+                elif token == "\n":
+                    display_token = "[newline]"
+                elif token.strip() == "":
+                    # For any other whitespace (e.g., multiple spaces)
+                    display_token = repr(token)
+                self.prediction_labels[i].config(text=f"{display_token}  ({prob}%)", fg="blue")
                 self.prediction_labels[i].token = token  # attach for click event
             for j in range(i + 1, 10):
                 self.prediction_labels[j].config(text="", fg="black")
@@ -103,7 +114,12 @@ class TokenPredictorApp:
     def complete_prompt(self, event):
         token = event.widget.token
         if token:
-            self.prompt_entry.insert(tk.END, token)
+            current = self.prompt_entry.get()
+            # If the prompt already ends with a space and the token starts with a space, avoid double space
+            if current.endswith(" ") and token.startswith(" "):
+                self.prompt_entry.insert(tk.END, token.lstrip())
+            else:
+                self.prompt_entry.insert(tk.END, token)
             self.update_predictions()
 
 if __name__ == "__main__":
