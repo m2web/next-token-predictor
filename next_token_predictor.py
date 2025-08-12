@@ -63,7 +63,7 @@ class TokenPredictorApp:
     def on_prompt_keyrelease(self, event):
         if self.debounce_id is not None:
             self.root.after_cancel(self.debounce_id)
-        self.debounce_id = self.root.after(850, self.update_predictions)
+        self.debounce_id = self.root.after(1050, self.update_predictions)
 
     def update_predictions(self):
         prompt = self.prompt_entry.get().strip()
