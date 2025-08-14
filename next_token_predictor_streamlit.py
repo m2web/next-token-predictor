@@ -5,12 +5,15 @@
 # - KPIs, full distribution, what-if rescale
 # Requires: streamlit, openai (>=1.x), numpy, pandas
 
+
+# Standard library and third-party imports
 import os, time, math
 import numpy as np
 import pandas as pd
 import streamlit as st
 
 # ---------- OpenAI SDK ----------
+# Import OpenAI SDK and handle missing package gracefully
 try:
     import openai as _openai
     from openai import OpenAI
@@ -22,14 +25,15 @@ except Exception:
 st.set_page_config(page_title="Next-Token Predictor", page_icon="🔮", layout="wide")
 st.caption(f"OpenAI SDK runtime: {_openai.__version__}")
 
+# Inject custom CSS for UI styling
 st.markdown("""
 <style>
 :root {
-  --card:#111418; --ink:#E8E8EA; --muted:#9aa3ad; --line:#232830;
-  --c1:#E3F2FD; --c1txt:#0D47A1;
-  --c2:#E8F5E9; --c2txt:#1B5E20;
-  --c3:#FFF3E0; --c3txt:#E65100;
-  --c4:#F3E5F5; --c4txt:#4A148C;
+    --card:#111418; --ink:#E8E8EA; --muted:#9aa3ad; --line:#232830;
+    --c1:#E3F2FD; --c1txt:#0D47A1;
+    --c2:#E8F5E9; --c2txt:#1B5E20;
+    --c3:#FFF3E0; --c3txt:#E65100;
+    --c4:#F3E5F5; --c4txt:#4A148C;
 }
 .block-container { padding-top: 1.0rem; }
 .card { background: var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 18px; }
@@ -39,8 +43,8 @@ table td, table th { font-variant-numeric: tabular-nums; }
 
 /* Infographic grid */
 .infogrid {
-  display:grid; gap:12px; grid-template-columns: repeat(4, minmax(180px, 1fr));
-  margin: 8px 0 2px 0;
+    display:grid; gap:12px; grid-template-columns: repeat(4, minmax(180px, 1fr));
+    margin: 8px 0 2px 0;
 }
 .infotile { border-radius:14px; padding:14px 14px; border:1px solid rgba(0,0,0,0.06); }
 .infotile h4 { margin:0 0 4px 0; font-size:16px; }
@@ -53,6 +57,8 @@ table td, table th { font-variant-numeric: tabular-nums; }
 """, unsafe_allow_html=True)
 
 # ---------- API key ----------
+
+# Read API key from environment or Streamlit secrets
 def _read_api_key():
     key = os.getenv("OPENAI_API_KEY")
     if key:
@@ -67,31 +73,41 @@ if not api_key:
     st.error("No OpenAI API key found. Set env var `OPENAI_API_KEY` or add `.streamlit/secrets.toml` with it.")
     st.stop()
 
+# Create OpenAI client for API calls
 client = OpenAI(api_key=api_key)
 
 # ---------- Sidebar ----------
+
+# Sidebar: model parameters and display options
 with st.sidebar:
     st.header("⚙️ Parameters")
+    # Model selection and sampling controls
     model = st.text_input("Model", value="gpt-4.1-mini")
     temperature = st.slider("Temperature", 0.0, 1.5, 0.7, 0.05)
     top_p = st.slider("Top-p (nucleus)", 0.05, 1.0, 0.95, 0.01)
     top_logprobs = st.slider("Top candidates to fetch", 1, 20, 20, 1)  # API cap ≤ 20
     max_tokens = st.slider("Max new tokens (for generation)", 1, 128, 16, 1)
+    # Display toggles
     show_generation = st.checkbox("Also generate text (token trail)", value=False)
     show_raw_tokens = st.checkbox("Show raw glyphs (␠ space, ⏎ newline, ↹ tab)", value=False)
     show_explainer = st.checkbox("Show 'Why It’s appears' explainer", value=True)
     st.caption("Tip: leave generation off to inspect the *immediate* next-token distribution faster.")
 
 # ---------- Inputs ----------
+
+# Main page: input prompts and feature summary
 st.title("🔮 Next-Token Predictor")
 st.caption("Infographic • Top-10 next tokens • Diagnostics")
 
+# Layout: left for prompts, right for feature summary
 cA, cB = st.columns([2,1])
 with cA:
+    # System and user prompt inputs
     system_prompt = st.text_area("System (optional)", "You are a helpful LLM that loves to educate and demonstrate how you think.", height=84)
     user_prompt = st.text_area("Enter your prompt / context", "It's a lovely day, let's go to the ", height=130)
 
 with cB:
+    # Feature summary card
     st.markdown('<div class="card">', unsafe_allow_html=True)
     st.markdown("**What you’ll see**")
     st.write("• Why “It’s” often appears (infographic)")
@@ -100,19 +116,25 @@ with cB:
     st.write("• Full distribution & what-if sampling (lower)")
     st.markdown('</div>', unsafe_allow_html=True)
 
+# Button to trigger prediction
 go = st.button("Predict next token")
 
 # ---------- Helpers ----------
+
+# ---------- Helper Functions ----------
 def round_up_to_sigfigs(x: float, sigfigs: int = 2) -> float:
+    """Round a number up to a given number of significant figures."""
     if x <= 0 or sigfigs <= 0: return 0.0
     exp = math.floor(math.log10(x))
     factor = 10 ** (sigfigs - 1 - exp)
     return math.ceil(x * factor) / factor
 
+
 def format_probability_adaptive(p: float,
                                 normal_decimals: int = 2,
                                 small_cutoff_pct: float = 0.01,
                                 small_sigfigs: int = 2) -> str:
+    """Format probability for display, using percent or scientific notation for small values."""
     if p is None or p <= 0: return "0%"
     pct = p * 100.0
     if pct >= small_cutoff_pct:
@@ -122,17 +144,22 @@ def format_probability_adaptive(p: float,
     decimals = max(0, small_sigfigs - 1 - exp)
     return f"<{ub:.{decimals}f}%"
 
+
 def entropy_from_df(df):
+    """Calculate entropy (in bits) from a DataFrame of probabilities."""
     ps = df["prob"].to_numpy()
     ps = ps[ps > 0]
     if len(ps) == 0: return 0.0
     return float(-np.sum(ps * np.log2(ps)))
 
+
 def to_raw_glyphs(s: str) -> str:
+    """Convert whitespace characters to visible glyphs for display."""
     return (s.replace("\n", "⏎").replace("\t", "↹").replace(" ", "␠"))
 
+
 def format_probability_table(df_top: pd.DataFrame):
-    """Pretty table: no index, bold headers, right-aligned percent."""
+    """Display a styled probability table in Streamlit."""
     styler = df_top[["token","percent"]].style
     try:
         styler = styler.hide(axis="index")

@@ -1,16 +1,22 @@
 
 import tkinter as tk
 from tkinter import messagebox
+
+# --- Imports and API Key Handling ---
 import openai
 import os
 
-# Set your OpenAI API key from environment variable
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-# Initialize client using new SDK (make sure your key is set as an env var)
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+def get_openai_client():
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise RuntimeError("Missing OPENAI_API_KEY environment variable. Please set your OpenAI API key.")
+    return openai.OpenAI(api_key=api_key)
+
+client = get_openai_client()
 
 class TokenPredictorApp:
     def __init__(self, root):
+        """Initialize the Tkinter GUI and set up widgets."""
         self.root = root
         self.root.title("Next Token Predictor")
         self.temperature = tk.DoubleVar(value=0.2)
@@ -66,7 +72,29 @@ class TokenPredictorApp:
             self.root.after_cancel(self.debounce_id)
         self.debounce_id = self.root.after(1050, self.update_predictions)
 
+
+    def predict_next_token(self, prompt, temperature):
+        """
+        Modularized prediction logic for easier testing.
+        Returns: (completed_text, sorted_tokens)
+        """
+        response = client.completions.create(
+            model="gpt-3.5-turbo-instruct",
+            prompt=prompt,
+            max_tokens=1,
+            logprobs=5,
+            temperature=temperature
+        )
+        top_tokens = response.choices[0].logprobs.top_logprobs[0]
+        best_token = max(top_tokens, key=top_tokens.get)
+        completed = prompt + best_token
+        sorted_tokens = sorted(top_tokens.items(), key=lambda x: -x[1])[:10]
+        return completed, sorted_tokens
+
     def update_predictions(self):
+        """
+        Get the prompt, run prediction, and update the GUI display.
+        """
         prompt = self.prompt_entry.get("1.0", tk.END).strip()
         if not prompt:
             for lbl in self.prediction_labels:
@@ -76,21 +104,10 @@ class TokenPredictorApp:
 
         try:
             temp = float(self.temp_entry.get())
-            response = client.completions.create(
-                model="gpt-3.5-turbo-instruct",
-                prompt=prompt,
-                max_tokens=1,
-                logprobs=5,
-                temperature=temp
-            )
-
-            top_tokens = response.choices[0].logprobs.top_logprobs[0]
-            best_token = max(top_tokens, key=top_tokens.get)
-            completed = prompt + best_token
-
+            completed, sorted_tokens = self.predict_next_token(prompt, temp)
             self.output_label.config(text=completed)
 
-            sorted_tokens = sorted(top_tokens.items(), key=lambda x: -x[1])[:10]
+            # Display top tokens and probabilities
             for i, (token, logprob) in enumerate(sorted_tokens):
                 prob = round(100 * (10 ** logprob), 2)
                 # Make whitespace tokens visible
@@ -102,7 +119,6 @@ class TokenPredictorApp:
                 elif token == "\n":
                     display_token = "[newline]"
                 elif token.strip() == "":
-                    # For any other whitespace (e.g., multiple spaces)
                     display_token = repr(token)
                 self.prediction_labels[i].config(text=f"{display_token}  ({prob}%)", fg="blue")
                 self.prediction_labels[i].token = token  # attach for click event
