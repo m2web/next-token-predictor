@@ -46,53 +46,105 @@ That said, I’m thrilled that technology has advanced to this point! 😊 LLMs 
    .\venv\Scripts\activate
    ```
 
-3. Install dependencies (if any):
+## How to Use
 
-   ```sh
-   pip install -r requirements.txt
-   ```
+### 1. Jupyter Notebook (`logprobs.ipynb`)
 
-### Usage
+- **Purpose:** Interactive code exploration and analysis.
+- **How to use:**
+   1. Open the notebook in Jupyter (VS Code, JupyterLab, or classic Jupyter).
+   2. Run each cell sequentially from top to bottom.
+   3. Follow the instructions in markdown cells and modify code cells as needed.
+   4. View token probabilities and experiment with prompts and parameters.
 
-#### Run the desktop predictor
+### 2. Streamlit Web App (`next_token_predictor_streamlit.py`)
 
-```sh
-python next_token_predictor.py
-```
+- **Purpose:** Web-based, interactive next-token prediction and diagnostics.
+- **How to use:**
+   1. Open a terminal in the project folder.
+   2. Run:
 
-#### Run the Streamlit web app
+       ```sh
+       streamlit run next_token_predictor_streamlit.py
+       ```
 
-```sh
-streamlit run next_token_predictor_streamlit.py
-```
+   3. The app will open in your browser.
+   4. Enter your prompt, adjust parameters, and view top token predictions, probability tables, and diagnostics.
 
-Follow the on-screen instructions to input your text and see the predicted next token. The app will display the top predicted next tokens and their probabilities, as provided by the OpenAI model.
+### 3. Tkinter Desktop App (`next_token_predictor.py`)
+
+- **Purpose:** Simple desktop GUI for quick next-token prediction.
+- **How to use:**
+   1. Open a terminal in the project folder.
+   2. Run:
+
+      ```python
+       python next_token_predictor.py
+       ```
+
+   3. A windowed app will appear.
+   4. Enter your prompt, adjust temperature, and view top token predictions. Click tokens to autocomplete your prompt.
+
+All three require a valid OpenAI API key set in your environment. Choose the interface that best fits your workflow: notebook for code, Streamlit for web, Tkinter for desktop.
 
 ## Project Structure
 
 ```text
-├── next_token_predictor.py                # Main application (OpenAI GPT-based predictor)
-├── next_token_predictor_streamlit.py      # Streamlit web app version
-├── .gitignore                             # Git ignore file
-├── .markdownlint.json                     # Markdown lint configuration
+next-token-predictor/
 ├── assets/
-│   ├── final_next_token_predictor_ui.png  # UI screenshot
-│   └── token-predictor.drawio.pdf         # Architecture diagram
+│   ├── final_next_token_predictor_ui.png      # UI screenshot
+│   └── token-predictor.drawio.pdf             # Architecture diagram
+├── logprobs.ipynb                             # Jupyter notebook for code-first exploration
+├── next_token_predictor.py                    # Tkinter desktop app
+├── next_token_predictor_streamlit.py          # Streamlit web app
+├── README.md                                  # Project documentation
+├── requirements.txt                           # Python dependencies
+├── .gitignore                                 # Git ignore file
 ```
+
+## Application Variants: Notebook, Streamlit, and Tkinter
+
+This project provides three main ways to experiment with next-token prediction:
+
+### 1. Jupyter Notebook (via `logprobs.ipynb`)
+
+- **Purpose:** Interactive, code-first exploration of next-token probabilities.
+- **Features:**
+- Step-by-step code cells to query OpenAI models and display token probabilities.
+- Visualizes results using pandas DataFrames.
+- Ideal for data scientists and developers who want to tinker, analyze, and extend the logic.
+- **Purpose:** User-friendly web interface for next-token prediction and diagnostics.
+- **Features:**
+- Modern UI with sliders, tables, and infographics.
+- Shows top-10 next tokens, probability distributions, and model diagnostics (entropy, perplexity, latency).
+- Allows interactive parameter tuning (temperature, top-p, etc.).
+- No coding required for users—just run and interact.
+- **Usage:** Run with `streamlit run next_token_predictor_streamlit.py` and use in your browser.
+
+### 2. Tkinter Desktop App (`next_token_predictor.py`)
+
+- **Purpose:** Simple desktop GUI for quick next-token prediction.
+- **Features:**
+- Click tokens to autocomplete your prompt.
+- Lightweight and easy to run on most systems.
+- **Usage:** Run with `python next_token_predictor.py` to launch the desktop app.
+
+---
+
+### Similarities
+
+- All variants use OpenAI’s GPT models to predict the next token.
+- Each displays the top predicted tokens and their probabilities.
+- **Streamlit App:** Best for interactive web-based use, visualization, and sharing with non-coders.
+- **Tkinter App:** Best for quick desktop use without a browser or notebook environment.
 
 ## Contributing
 
-Contributions are welcome! Please open issues or submit pull requests for improvements, bug fixes, or new features.
-
 ## License
-
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## Acknowledgements
 
 - Inspired by classic NLP and AI research
-- Also inspired by Scott Hanselman's demonstration of his next-token prediction app ([see him on GitHub](https://github.com/shanselman))
-- UI design by [m2web](https://github.com/m2web)
 
 ---
 
