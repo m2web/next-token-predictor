@@ -13,7 +13,7 @@ class DummyResponse:
             }]
         logprobs = LogProbs()
         def __init__(self):
-            self.logprobs = [self.Choices()]
+            self.logprobs = [Choices()]
     choices = [Choices()]
 
     def __init__(self):
