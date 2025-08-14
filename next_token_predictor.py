@@ -28,8 +28,9 @@ class TokenPredictorApp:
         tk.Label(prompt_outer, text="Enter your prompt here:", font=("Arial", 11, "bold"), bg="#f8f8ff").pack(anchor="w", padx=2, pady=(10, 0))
         prompt_frame = tk.Frame(prompt_outer, bd=1, relief="solid", bg="#f8f8ff")
         prompt_frame.pack(fill=tk.X, padx=0, pady=(0,0))
-        self.prompt_entry = tk.Entry(prompt_frame, width=50, font=("Arial", 12), borderwidth=0, bg="#f8f8ff")
-        self.prompt_entry.pack(padx=10, pady=10)
+        self.prompt_entry = tk.Text(prompt_frame, width=50, height=5, font=("Arial", 12), borderwidth=0, bg="#f8f8ff", wrap="word")
+        self.prompt_entry.pack(padx=10, pady=10, fill=tk.X, expand=True)
+        self.prompt_entry.insert("1.0", "It's a lovely day let's go to the ")
         self.debounce_id = None
         self.prompt_entry.bind("<KeyRelease>", self.on_prompt_keyrelease)
 
@@ -66,7 +67,7 @@ class TokenPredictorApp:
         self.debounce_id = self.root.after(1050, self.update_predictions)
 
     def update_predictions(self):
-        prompt = self.prompt_entry.get().strip()
+        prompt = self.prompt_entry.get("1.0", tk.END).strip()
         if not prompt:
             for lbl in self.prediction_labels:
                 lbl.config(text="", fg="black")
@@ -114,7 +115,7 @@ class TokenPredictorApp:
     def complete_prompt(self, event):
         token = event.widget.token
         if token:
-            current = self.prompt_entry.get()
+            current = self.prompt_entry.get("1.0", tk.END)
             # If the prompt already ends with a space and the token starts with a space, avoid double space
             if current.endswith(" ") and token.startswith(" "):
                 self.prompt_entry.insert(tk.END, token.lstrip())
